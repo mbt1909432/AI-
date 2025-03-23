@@ -24,7 +24,7 @@ if [ ! -z "$EXISTING_CONTAINER" ]; then
 fi
 
 # 启动新容器
-echo "正在启动网站服务..."
+echo "正在启动网站服务...."
 docker run -d -p 9001:9001 --name ai-surrender-container ai-surrender-app
 
 echo "====================================="
