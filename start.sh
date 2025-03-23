@@ -24,10 +24,35 @@ if [ ! -z "$EXISTING_CONTAINER" ]; then
 fi
 
 # 启动新容器
-echo "正在启动网站服务...."
+echo "正在启动网站服务..."
 docker run -d -p 9001:9001 --name ai-surrender-container ai-surrender-app
 
+# 等待几秒让容器有时间启动
+sleep 3
+
+# 检查容器是否运行
+CONTAINER_RUNNING=$(docker ps -q --filter "name=ai-surrender-container")
+if [ -z "$CONTAINER_RUNNING" ]; then
+    echo "警告: 容器似乎没有正常运行!"
+    echo "查看容器日志:"
+    docker logs ai-surrender-container
+    
+    echo "查看所有容器状态(包括已停止的):"
+    docker ps -a | grep ai-surrender-container
+    
+    # 尝试使用主机网络模式重新启动容器
+    echo "尝试使用host网络模式重启容器..."
+    docker rm ai-surrender-container
+    docker run -d --network host --name ai-surrender-container ai-surrender-app
+    
+    echo "再次检查容器状态:"
+    docker ps | grep ai-surrender-container
+else
+    echo "容器成功启动！"
+    echo "查看容器详情:"
+    docker ps | grep ai-surrender-container
+fi
+
 echo "====================================="
-echo "AI投降装置已启动！"
-echo "请访问: http://localhost:9001"
+echo "如果容器正常运行，请访问: http://localhost:9001"
 echo "=====================================" 
